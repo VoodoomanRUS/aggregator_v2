@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16.4
+    container_name: aggregatorv2.postgres
+    env_file:
+      - .env.local
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+    # Универсальный сервис для goose
+  goose:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrations
+    volumes:
+      - ./migrations:/app/migrations
+    environment:
+      - GOOSE_DRIVER=${GOOSE_DRIVER}
+      - GOOSE_DBSTRING=${POSTGRES_DSN}
+    working_dir: /app
+    # Без команды по умолчанию — она будет передаваться при запуске

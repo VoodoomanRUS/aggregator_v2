@@ -1,0 +1,280 @@
+openapi: 3.0.0
+info:
+  title: Loan aggregating api
+  description: API для управления организациями и заявками на кредит
+  version: 0.0.1
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Dev server
+components:
+  schemas:
+    Organization:
+      type: object
+      required:
+        - id
+        - name
+        - email
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: 123123123
+        name:
+          type: string
+          example: "Организация 1"
+        email:
+          type: string
+          example: "x@x.x"
+    User:
+      type: object
+      required:
+        - id
+        - email
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: "123123123"
+        email:
+          type: string
+          example: "x@x.x"
+    LoanApplication:
+      type: object
+      required:
+        - id
+        - userId
+        - organizationID
+        - status
+        - createdAt
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: "123123123"
+        userId:
+          type: string
+          format: uuid
+          description: Клиент, оставивший заявку
+          example: "123123123"
+        status:
+          type: boolean
+          example: "false"
+        organizationId:
+          type: string
+          format: uuid
+          description: Организация, обрабатывающая заявку
+          example: "123123123"
+paths:
+  /organizations:
+    get:
+      summary: Список организаций
+      responses:
+        '200':
+          description: Список организаций
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+    post:
+      summary: Создать новую организацию
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ name ]
+              properties:
+                name:
+                  type: string
+                  example: "Огранизация 1"
+      responses:
+        '201':
+          description: Организация создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+  /organizations/{name}:
+    get:
+      summary: Получить организацию по name
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Организация найдена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '404':
+          description: Организация не найдена
+  /users:
+    get:
+      summary: Список пользователей
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Создать нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ name, email ]
+              properties:
+                email:
+                  type: string
+                  format: email
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /user/{email}:
+    get:
+      summary: Найти пользователя по E-mail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: Пользователь найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Пользователь не найден
+  /loan_applicaions:
+    get:
+      summary: Список заявок
+      parameters:
+        - name: userName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: organizationName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Список заявок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanApplication'
+    post:
+      summary: Создать новую заявку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ userName, organizationName ]
+              properties:
+                userName:
+                  type: string
+                organizationName:
+                  type: string
+      responses:
+        '201':
+          description: Заявка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanApplication'
+  /loan-applications/{userName}:
+    get:
+      summary: Получить заявки по имени пользователя
+      parameters:
+        - name: userName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список заявок по имени пользователя
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanApplication'
+        '404':
+          description: Заявок не найдено
+  /loan-applications/{organizationName}:
+    get:
+      summary: Получить заявки по названию организации
+      parameters:
+        - name: organizationName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Список заявок по названию организации
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanApplication'
+        '404':
+          description: Заявок не найдено
+  /loan-applications/{uuid}:
+    patch:
+      summary: Обновить статус заявки
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: boolean
+      responses:
+        '200':
+          description: Статус заявки обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanApplication'
+        '404':
+          description: Заявка не найдена
