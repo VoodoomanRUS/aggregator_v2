@@ -147,3 +147,6 @@ migrate-check:
 	docker compose --env-file .env.test -f docker-compose.test.yml run --rm goose-test goose -dir ./migrations up
 	@echo "✅ Валидация пройдена! Все миграции идемпотентны."
 	docker compose --env-file .env.test -f docker-compose.test.yml down
+
+validate-spec:
+	MSYS_NO_PATHCONV=1 docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate -i /local/specs/aggregator.yaml

@@ -217,7 +217,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoanApplication'
-  /loan-applications/{userName}:
+  /loan_applications/{userName}:
     get:
       summary: Получить заявки по имени пользователя
       parameters:
@@ -237,7 +237,7 @@ paths:
                   $ref: '#/components/schemas/LoanApplication'
         '404':
           description: Заявок не найдено
-  /loan-applications/{organizationName}:
+  /loan_applications/{organizationName}:
     get:
       summary: Получить заявки по названию организации
       parameters:
@@ -257,7 +257,14 @@ paths:
                   $ref: '#/components/schemas/LoanApplication'
         '404':
           description: Заявок не найдено
-  /loan-applications/{uuid}:
+  /loan_applications/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
     patch:
       summary: Обновить статус заявки
       requestBody:
