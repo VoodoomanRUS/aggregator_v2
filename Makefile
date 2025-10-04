@@ -150,3 +150,9 @@ migrate-check:
 
 validate-spec:
 	MSYS_NO_PATHCONV=1 docker run --rm -v "${PWD}:/local" openapitools/openapi-generator-cli validate -i /local/specs/aggregator.yaml
+openapi-generator-start:
+	MSYS_NO_PATHCONV=1 docker run --rm -v "/c/Users/Voodooman/GolandProjects/aggregator_v2:/local" openapitools/openapi-generator-cli generate \
+      -i /local/specs/aggregator.yaml \
+      -g go-server \
+      -o /local/openapi
+      --additional-properties=sourceFolder=/local/makeopenapi
