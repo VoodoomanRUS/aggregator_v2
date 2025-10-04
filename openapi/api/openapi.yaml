@@ -1,0 +1,668 @@
+openapi: 3.0.0
+info:
+  description: API для управления организациями и заявками на кредит
+  title: Loan aggregating api
+  version: 0.0.1
+servers:
+- description: Dev server
+  url: http://localhost:8080/api/v1
+paths:
+  /organizations:
+    get:
+      operationId: OrganizationsList
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/Organization"
+                type: array
+          description: List of all organizations
+        "204":
+          description: No content
+        "500":
+          description: Internal server error
+      summary: organizations list
+    post:
+      operationId: CreateNewOrganization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNewOrganization_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+          description: Organization created
+        "400":
+          description: Bad request
+        "500":
+          description: Internal server error
+      summary: Create new organization
+  /organizations/by-uuid/{uuid}:
+    delete:
+      operationId: DeleteOrganizationByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Organization removed successfully
+        "400":
+          description: Invalid UUID
+        "404":
+          description: Organization not found
+        "500":
+          description: Internal server error
+      summary: Delete organization by UUID
+    get:
+      operationId: GetOrganizationByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+          description: Organization found
+        "400":
+          description: Invalid UUID
+        "404":
+          description: Organization not found
+        "500":
+          description: Internal server error
+      summary: Find organization by UUID
+    patch:
+      operationId: UpdateOrganizationByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationPatch"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+          description: Organization updated successfully
+        "400":
+          description: Invalid UUID
+        "404":
+          description: Organization not found
+        "500":
+          description: Internal server error
+      summary: Update Organization by UUID
+  /organizations/by-name/{name}:
+    delete:
+      operationId: DeleteOrganizationByName
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Organization deleted successfully
+        "400":
+          description: Invalid name
+        "404":
+          description: Organization not found
+        "500":
+          description: Internal server error
+      summary: Delete organization by name
+    get:
+      operationId: GetOrganizationByName
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+          description: Organization found
+        "400":
+          description: Invalid organization name
+        "404":
+          description: Organization not found
+        "500":
+          description: Internal server error
+      summary: Find organization by name
+    patch:
+      operationId: UpdateOrganizationByName
+      parameters:
+      - explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationPatch"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Organization"
+          description: Organization updated successfully
+        "400":
+          description: Invalid name
+        "404":
+          description: Organization not found
+        "500":
+          description: Internal server error
+      summary: Update organization by name
+  /users:
+    get:
+      operationId: UsersList
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/User"
+                type: array
+          description: List of all users
+      summary: users list
+    post:
+      operationId: CreateNewUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNewUser_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User created
+      summary: Create new user
+  /users/by-uuid/{uuid}:
+    delete:
+      operationId: DeleteUserByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: User deleted successfully
+        "400":
+          description: Invalid UUID
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      summary: Delete user by UUID
+    get:
+      operationId: GetUserByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User found
+        "400":
+          description: Invalid UUID
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      summary: Find user by UUID
+    patch:
+      operationId: UpdateUserByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatch"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User updated successfully
+        "400":
+          description: Invalid UUID
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      summary: Update User by UUID
+  /users/by-email/{email}:
+    get:
+      operationId: GetUserByEmail
+      parameters:
+      - explode: false
+        in: path
+        name: email
+        required: true
+        schema:
+          format: email
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: User found
+        "400":
+          description: Invalid e-mail
+        "404":
+          description: User not found
+        "500":
+          description: Internal server error
+      summary: Find user by E-mail
+  /loan_applications:
+    get:
+      operationId: LoanApplications
+      parameters:
+      - explode: true
+        in: query
+        name: value
+        required: false
+        schema:
+          type: number
+        style: form
+      - explode: true
+        in: query
+        name: incoming_organization_uuid
+        required: false
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: issue_organization_uuid
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/LoanApplication"
+                type: array
+          description: Список заявок
+        "404":
+          description: Loan applications not found
+        "500":
+          description: Internal server error
+      summary: Loan applications list
+    post:
+      operationId: CreateNewLoanApplication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNewLoanApplication_request"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanApplication"
+          description: Application created
+        "400":
+          description: Invalid request
+        "500":
+          description: Internal server error
+      summary: Create new loan application
+  /loan_applications/by-incoming-organization-uuid/{incoming_organization_uuid}:
+    get:
+      operationId: GetLoanApplicationsByIncomingOrganizationUUID
+      parameters:
+      - explode: false
+        in: path
+        name: incoming_organization_uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/LoanApplication"
+                type: array
+          description: Loan application list found by incoming organization UUID
+        "400":
+          description: Invalid request
+        "404":
+          description: Applications not found
+        "500":
+          description: Internal server error
+      summary: Find loan applications by incoming organization UUID
+  /loan_applications/by-issue-organization-uuid/{issue_organization_uuid}:
+    get:
+      operationId: GetLoanApplicationsByIssueOrganizationUUID
+      parameters:
+      - explode: false
+        in: path
+        name: issue_organization_uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/LoanApplication"
+                type: array
+          description: Loan application list found by issue organization UUID
+        "400":
+          description: Invalid request
+        "404":
+          description: Applications not found
+        "500":
+          description: Internal server error
+      summary: Find loan applications by issue organization UUID
+  /loan_applications/by-uuid/{uuid}:
+    delete:
+      operationId: DeleteLoanApplicationByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Loan application deleted successfully
+        "400":
+          description: Invalid UUID
+        "404":
+          description: Loan application not found
+        "500":
+          description: Internal server error
+      summary: Delete loan application by UUID
+    get:
+      operationId: GetLoanApplicationByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanApplication"
+          description: Appllication found
+        "400":
+          description: Invalid UUID
+        "404":
+          description: Application not found
+        "500":
+          description: Internal server error
+      summary: Find loan application by UUID
+    patch:
+      operationId: UpdateLoanApplicationByUUID
+      parameters:
+      - explode: false
+        in: path
+        name: uuid
+        required: true
+        schema:
+          format: uuid
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoanApplicationPatch"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanApplication"
+          description: Loan application updated successfully
+        "400":
+          description: Invalid UUID
+        "404":
+          description: Loan application not found
+        "500":
+          description: Internal server error
+      summary: Update loan application by UUID
+components:
+  schemas:
+    Organization:
+      example:
+        name: name
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        email: email
+      properties:
+        uuid:
+          format: uuid
+          type: string
+        name:
+          type: string
+        email:
+          format: email
+          type: string
+      required:
+      - email
+      - name
+      - uuid
+      type: object
+    User:
+      example:
+        name: name
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        email: email
+      properties:
+        uuid:
+          format: uuid
+          type: string
+        name:
+          type: string
+        email:
+          format: email
+          type: string
+      required:
+      - email
+      - name
+      - uuid
+      type: object
+    LoanApplication:
+      example:
+        issue_organization_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        incoming_organization_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        value: 1000.0
+      properties:
+        uuid:
+          format: uuid
+          type: string
+        value:
+          example: 1000.0
+          type: number
+        incoming_organization_uuid:
+          description: Incoming organization UUID
+          format: uuid
+          type: string
+        issue_organization_uuid:
+          description: Issue organization UUID
+          format: uuid
+          type: string
+      required:
+      - incoming_organization_uuid
+      - issue_organization_uuid
+      - uuid
+      type: object
+    OrganizationPatch:
+      example:
+        name: name
+        email: email
+      properties:
+        name:
+          type: string
+        email:
+          format: email
+          type: string
+      type: object
+    UserPatch:
+      example:
+        name: name
+        email: email
+      properties:
+        name:
+          type: string
+        email:
+          format: email
+          type: string
+      type: object
+    LoanApplicationPatch:
+      example:
+        issue_organization_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        incoming_organization_uuid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        value: 0.8008281904610115
+      properties:
+        value:
+          type: number
+        incoming_organization_uuid:
+          format: uuid
+          type: string
+        issue_organization_uuid:
+          format: uuid
+          type: string
+      type: object
+    CreateNewOrganization_request:
+      properties:
+        name:
+          example: Organization 1
+          type: string
+        email:
+          example: org@example.com
+          format: email
+          type: string
+      required:
+      - email
+      - name
+      type: object
+    CreateNewUser_request:
+      properties:
+        email:
+          format: email
+          type: string
+        name:
+          type: string
+      required:
+      - email
+      - name
+      type: object
+    CreateNewLoanApplication_request:
+      properties:
+        value:
+          example: 1000.0
+          type: number
+        incoming_organization_uuid:
+          format: uuid
+          type: string
+        issue_organization_uuid:
+          format: uuid
+          type: string
+      required:
+      - incoming_organization_uuid
+      - issue_organization_uuid
+      - value
+      type: object

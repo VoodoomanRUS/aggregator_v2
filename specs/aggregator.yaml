@@ -25,7 +25,7 @@ paths:
         '500':
           description: Internal server error
     post:
-      summary: Создать новую организацию
+      summary: Create new organization
       operationId: CreateNewOrganization
       requestBody:
         required: true
@@ -37,7 +37,11 @@ paths:
               properties:
                 name:
                   type: string
-                  example: "Огранизация 1"
+                  example: "Organization 1"
+                email:
+                  type: string
+                  format: email
+                  example: "org@example.com"
       responses:
         '201':
           description: Organization created
@@ -49,9 +53,9 @@ paths:
           description: Bad request
         '500':
           description: Internal server error
-  /organizations/{uuid}:
+  /organizations/by-uuid/{uuid}:
     get:
-      summary: Получить организацию по UUID
+      summary: Find organization by UUID
       operationId: GetOrganizationByUUID
       parameters:
         - name: uuid
@@ -83,6 +87,12 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationPatch'
       responses:
         '200':
           description: Organization updated successfully
@@ -115,9 +125,9 @@ paths:
           description: Organization not found
         '500':
           description: Internal server error
-  /organizations/{name}:
+  /organizations/by-name/{name}:
     get:
-      summary: Получить организацию по name
+      summary: Find organization by name
       operationId: GetOrganizationByName
       parameters:
         - name: name
@@ -127,7 +137,7 @@ paths:
             type: string
       responses:
         '200':
-          description: Организация найдена
+          description: Organization found
           content:
             application/json:
               schema:
@@ -147,6 +157,12 @@ paths:
           required: true
           schema:
             type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationPatch'
       responses:
         '200':
           description: Organization updated successfully
@@ -155,11 +171,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Organization'
         '400':
-            description: Invalid name
+          description: Invalid name
         '404':
-            description: Organization not found
+          description: Organization not found
         '500':
-            description: Internal server error
+          description: Internal server error
     delete:
       summary: Delete organization by name
       operationId: DeleteOrganizationByName
@@ -180,11 +196,11 @@ paths:
           description: Internal server error
   /users:
     get:
-      summary: Список пользователей
+      summary: users list
       operationId: UsersList
       responses:
         '200':
-          description: Список пользователей
+          description: List of all users
           content:
             application/json:
               schema:
@@ -192,7 +208,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
     post:
-      summary: Создать нового пользователя
+      summary: Create new user
       operationId: CreateNewUser
       requestBody:
         required: true
@@ -209,12 +225,12 @@ paths:
                   type: string
       responses:
         '201':
-          description: Пользователь создан
+          description: User created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-  /user/{uuid}:
+  /users/by-uuid/{uuid}:
     get:
       summary: Find user by UUID
       operationId: GetUserByUUID
@@ -227,7 +243,7 @@ paths:
             format: uuid
       responses:
         '200':
-          description: Пользователь найден
+          description: User found
           content:
             application/json:
               schema:
@@ -248,6 +264,12 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatch'
       responses:
         '200':
           description: User updated successfully
@@ -280,7 +302,7 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-  /user/{email}:
+  /users/by-email/{email}:
     get:
       summary: Find user by E-mail
       operationId: GetUserByEmail
@@ -304,7 +326,7 @@ paths:
           description: User not found
         '500':
           description: Internal server error
-  /loan_applicaions:
+  /loan_applications:
     get:
       summary: Loan applications list
       operationId: LoanApplications
@@ -338,7 +360,7 @@ paths:
         '500':
           description: Internal server error
     post:
-      summary: Создать новую заявку
+      summary: Create new loan application
       operationId: CreateNewLoanApplication
       requestBody:
         required: true
@@ -348,13 +370,18 @@ paths:
               type: object
               required: [ value, incoming_organization_uuid, issue_organization_uuid ]
               properties:
-                userName:
+                value:
+                  type: number
+                  example: 1000.0
+                incoming_organization_uuid:
                   type: string
-                organizationName:
+                  format: uuid
+                issue_organization_uuid:
                   type: string
+                  format: uuid
       responses:
         '201':
-          description: Заявка создана
+          description: Application created
           content:
             application/json:
               schema:
@@ -363,7 +390,7 @@ paths:
           description: Invalid request
         '500':
           description: Internal server error
-  /loan_applications/{incoming_organization_uuid}:
+  /loan_applications/by-incoming-organization-uuid/{incoming_organization_uuid}:
     get:
       summary: Find loan applications by incoming organization UUID
       operationId: GetLoanApplicationsByIncomingOrganizationUUID
@@ -389,7 +416,7 @@ paths:
           description: Applications not found
         '500':
           description: Internal server error
-  /loan_applications/{issue_organization_uuid}:
+  /loan_applications/by-issue-organization-uuid/{issue_organization_uuid}:
     get:
       summary: Find loan applications by issue organization UUID
       operationId: GetLoanApplicationsByIssueOrganizationUUID
@@ -415,7 +442,7 @@ paths:
           description: Applications not found
         '500':
           description: Internal server error
-  /loan_applications/{uuid}:
+  /loan_applications/by-uuid/{uuid}:
     get:
       summary: Find loan application by UUID
       operationId: GetLoanApplicationByUUID
@@ -449,6 +476,12 @@ paths:
           schema:
             type: string
             format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanApplicationPatch'
       responses:
         '200':
           description: Loan application updated successfully
@@ -493,13 +526,11 @@ components:
         uuid:
           type: string
           format: uuid
-          example: 123123123
         name:
           type: string
-          example: "Организация 1"
         email:
           type: string
-          example: "x@x.x"
+          format: email
     User:
       type: object
       required:
@@ -510,13 +541,11 @@ components:
         uuid:
           type: string
           format: uuid
-          example: "123123123"
         name:
           type: string
-          example: "bla"
         email:
           type: string
-          example: "x@x.x"
+          format: email
     LoanApplication:
       type: object
       required:
@@ -527,17 +556,41 @@ components:
         uuid:
           type: string
           format: uuid
-          example: "123123123"
         value:
           type: number
-          example: "1000.00"
+          example: 1000.00
         incoming_organization_uuid:
           type: string
           format: uuid
-          description: Клиент, оставивший заявку
-          example: "123123123"
+          description: Incoming organization UUID
         issue_organization_uuid:
           type: string
           format: uuid
-          description: Организация, обрабатывающая заявку
-          example: "123123123"
+          description: Issue organization UUID
+    OrganizationPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+    UserPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+    LoanApplicationPatch:
+      type: object
+      properties:
+        value:
+          type: number
+        incoming_organization_uuid:
+          type: string
+          format: uuid
+        issue_organization_uuid:
+          type: string
+          format: uuid

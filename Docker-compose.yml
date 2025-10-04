@@ -28,3 +28,14 @@ services:
       - GOOSE_DBSTRING=${POSTGRES_DSN}
     working_dir: /app
     # Без команды по умолчанию — она будет передаваться при запуске
+  # Основное приложение
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.local
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: [ "app" ]  # ← можно запускать отдельно
